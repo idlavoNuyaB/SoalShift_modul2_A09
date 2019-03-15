@@ -33,18 +33,18 @@ int main() {
         char temp[1000],nama[]={"/home/arvanna/Documents/makanan/makan_enak.txt"};
         struct stat info;
         FILE *fil;
-        stat(nama,&info);
-        time_t akhir=info.st_mtime;
-        double different=difftime(time(NULL),akhir);
+        stat(nama,&info);//ngambil informasi dari nama
+        time_t akhir=info.st_mtime;//ngecek jika terakhir kali dibuka
+        double different=difftime(time(NULL),akhir);//selisih waktu terakhir dibuka dengan waktu sekarang 
         if(different<=30.0){
             char newName[]={"/home/arvanna/Documents/makanan/makanan_sehat"};
-            sprintf(temp,"%d",flag);
-            strcat(newName,temp);
-            strcat(newName,".txt");
+            sprintf(temp,"%d",flag);//mengubah flag menjadi temp dalam bentuk string
+            strcat(newName,temp);//menggabungkan newname dengan temp
+            strcat(newName,".txt");//menggabungkan newname dengan txt
             //printf("%s",newName);
-            fil=fopen(newName,"w+");
+            fil=fopen(newName,"w+");//buat file baru
             fclose(fil);
-            flag++;
+            flag++;//flag +1
         }
         sleep(5);
       }
