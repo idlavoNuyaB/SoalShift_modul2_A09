@@ -250,4 +250,92 @@
 
       NB: Dilarang menggunakan crontab dan tidak memakai argumen ketika menjalankan program.
 
+    **Jawab :**
+    
+    * Pertama-tama kita membuat inisialisasi daemon processnya. Daemon process kita gunakan sesuai modul
+    
+    	  if (pid > 0)// its the parent process
+    	  {
+       	  printf("pid of child process %d \n", pid);
+       	  fptr3 = fopen("nomerpid.txt", "w");
+       	  fprintf(fptr3, "%d", pid);
+          fclose(fptr3); 
+          exit(0); //terminate the parent process succesfully
+          }
 
+     * Pada parent process didapatkan nomer pid. Nomer ini disimpan dalam nomerpid.txt . Digunakan untuk mengkill program dengan format $ kill (nomerpid). Yang selanjutkan akan digunakan pada program soal b.
+	
+			while(1){
+    		strcpy(loca, "log/"); //untuk mengembalikan string loca menjadi "log/"
+    		time( &t ); //pengambilan waktu baru untuk proses yang berjalan
+    		tmp = localtime( &t ); 
+    		strftime(MY_TIME, sizeof(MY_TIME), "%d:%m:%Y:%H:%M", tmp); //pengambilan output dari struct 
+    		strcat(loca,MY_TIME); //menggabung loca dengan hasil struct (untuk lokasi penempatan)
+    		mkdir(loca, 0700); // pembuatan folder dalam log
+    		while(i<30){     // loop untuk file log#.log
+    		strcpy(ax,loca); //membuat variable ax menjadi sama dengan loca
+    		k=i+1;           //untuk penomoran log#
+    		sprintf(al, "/log%d", k); // penggabungan string dengan nomor k
+    		strcat(al,".log");   // penggabungan string dengan .log
+		   // Open one file for reading 
+    		fptr1 = fopen(filename, "r");  //membuka file syslog
+    		strcat(ax,al);                 // penggabungan string untuk penentuan lokasi file log ditaruh
+
+    		// Open another file for writing 
+    		fptr2 = fopen(ax, "w");        //membua file log yang akan diisi
+  
+    		// Read contents from file 
+    		c = fgetc(fptr1);             // menentukan panjangnya isi file syslog
+    		while (c != EOF)    //loop mengcopy isi syslog ke log#.log
+    		{ 
+        	fputc(c, fptr2); 
+        	c = fgetc(fptr1); 
+    		} 
+        	fclose(fptr1); 
+        	fclose(fptr2);
+
+         	sleep(60);   // sleep waktu 60 detik
+        
+		   i++;
+		   }
+  		   i=0;
+
+	* Mengembalikan string loca menjadi log ( untuk mendapatkan alamat directory baru)
+	
+	* Mengambil time baru untuk membuat folder /[dd:MM:yyyy-hh:mm]
+	
+	* While (i<30) setiap 1 menit membuat program log#.log dan memasukkan dalam folder /[dd:MM:yyyy-hh:mm]
+	
+	* While(c!=EOF)  mengcopy syslog ke log#.log
+	
+	* Loop berulang trus sampai program dihentikan 
+
+			int main()
+			{
+    			//mengkill program yang berjalan
+    			int x; //insialisasi variable x
+    			char b[50]; //inisualisasi char 
+ 				FILE *fptr3; //inisialisasi file 
+    			fptr3 = fopen("nomerpid.txt", "r"); // membuka file dengan nama nomerpid.txt
+    			fscanf(fptr3, "%d", &x); //menscan isi file 
+    			fclose(fptr3); // menutup file
+    			sprintf(b, "%d", x); // merubah inputan dari integer menjadi string
+    			char *argv[4] = {"kill", b, NULL}; // mengkill program dengan nomer pid yang telah didapatkan
+    			execv("/bin/kill", argv); // directory kill
+			
+	       	return 0;
+			}
+		
+	* Program untuk menghentikan process.
+	
+	* Mengopen file nomerpid.txt yang berisi pid program saat dijalankan
+	
+	* Menscan si file untuk dijadikan variable x
+	
+	* Merubah bentuk variable x yang awal integer menjadi string (karena input memerlukan string )
+	
+	* Mengkill program dengan nomer pid tersebut 
+
+	 [**Source Code For 5A**](https://github.com/idlavoNuyaB/SoalShift_modul2_A09/blob/master/soal5/soal5.c)
+	 
+	 [**Source Code For 5B**](https://github.com/idlavoNuyaB/SoalShift_modul2_A09/blob/master/soal5/soal5b.c)
