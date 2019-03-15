@@ -107,7 +107,74 @@
     * Gunakan pipe
 
     * Pastikan file daftar.txt dapat diakses dari text editor
+    
+    **Jawab :**
+    
+    * Mengekstrak file campur2.zip lalu menyimpan file yang berekstensi .txt ke daftar.txt
+    
+    **Penjelasan :**
+    
+    	 pid_t child_id,child_id2,child_id3;
+  	 int pip[2],stats;
+  	 child_id = fork();
+  	 pipe(pip);//pip pertama
+  	 pipe(pip+2);//pip kedua
 
+    * Ngedeklarasikan variabel yang dibutuhkan dan membuat dua pipe dengan satu variabel saja.
+    
+    	   if (child_id == 0) {
+    		char *zip[3] = {"unzip", "campur2.zip", NULL};
+    		execvp(zip[0], zip);//buat nge unzip
+  	    }
+	   
+    * Mengunzip file campur2.zip
+    
+    	  while(wait(&stats)>0);//menunggu child hingga selesai
+    	  child_id2=fork();
+    	  if(child_id2==0){
+            dup2(pip[1],1);//buat menyimpan hasil ls nanti. Intinya buat write
+            close(pip[1]);
+            close(pip[0]);
+            close(pip[3]);
+            close(pip[2]);
+            char *see[]={"ls","/home/arvanna/campur2/",NULL};
+            execvp(see[0],see);//melihat semua data di directory itu
+    	  }
+    	  else{
+            child_id3=fork();
+            if(child_id3>0){
+                    dup2(pip[0],0);//ngebaca yang dari ls tadi
+                    dup2(pip[3],1);//nyimpan hasil dari greb nanti
+                    close(pip[3]);
+                    close(pip[1]);
+                    close(pip[2]);
+                    close(pip[0]);
+                    char *grab[]={"grep",".txt$",NULL};
+                    execvp(grab[0],grab);//ketika ada file yang paling belakang isinya.txt diambil     
+            }
+            else{
+                    char hasil[1000];
+                    close(pip[1]);
+                    close(pip[0]);
+                    close(pip[3]);
+                    read(pip[2],hasil,sizeof(hasil));//ngebaca dari greb tadi
+                    close(pip[2]);
+                    FILE *file=fopen("/home/arvanna/modul2/daftar.txt","w+");//buat file
+                    fputs(hasil,file);//memasukkan hasil ke file
+                    fclose(file);          
+            }
+          }
+     
+     * Menunggu status child_id hingga selesai
+     
+     * Melihat directory campur2 dengan ls
+     
+     * Mengambil yang paling belankang .txt dengan grep .txt$
+     
+     * Memasukkan hasil ke daftar.txt
+     
+     [**Source Code**](https://github.com/idlavoNuyaB/SoalShift_modul2_A09/blob/master/soal3/soal3.c)
+     
 4. Dalam direktori /home/[user]/Documents/makanan terdapat file makan_enak.txt yang berisikan daftar makanan terkenal di Surabaya. Elen sedang melakukan diet dan seringkali tergiur untuk membaca isi makan_enak.txt karena ngidam makanan enak. Sebagai teman yang baik, Anda membantu Elen dengan membuat program C yang berjalan setiap 5 detik untuk memeriksa apakah file makan_enak.txt pernah dibuka setidaknya 30 detik yang lalu (rentang 0 - 30 detik). Jika file itu pernah dibuka, program Anda akan membuat 1 file makan_sehat#.txt di direktori /home/[user]/Documents/makanan dengan '#' berisi bilangan bulat dari 1 sampai tak hingga untuk mengingatkan Elen agar berdiet.
 
     Contoh:
@@ -121,7 +188,49 @@
     * dilarang menggunakan crontab
 
     * Contoh nama file : makan_sehat1.txt, makan_sehat2.txt, dst
+    
+    **Jawab :**
+    
+    * Berkas makan_enak.txt tiap dibuka akan memunculkan makan_sehat1.txt,dst tiap 5 detik selama selang waktu 30 detik.
+    
+    **Penjelasan :**
+    
+    	char temp[1000],nama[]={"/home/arvanna/Documents/makanan/makan_enak.txt"};
+        struct stat info;
+        FILE *fil;
 
+    * Mendeklarasikkan variabel yang dibutuhkan
+    
+    	  stat(nama,&info);//ngambil informasi dari nama
+          time_t akhir=info.st_mtime;//ngecek jika terakhir kali dibuka
+          double different=difftime(time(NULL),akhir);//selisih waktu terakhir dibuka dengan waktu sekarang 
+        	if(different<=30.0){
+            	char newName[]={"/home/arvanna/Documents/makanan/makanan_sehat"};
+            	sprintf(temp,"%d",flag);//mengubah flag menjadi temp dalam bentuk string
+            	strcat(newName,temp);//menggabungkan newname dengan temp
+            	strcat(newName,".txt");//menggabungkan newname dengan txt
+            //printf("%s",newName);
+            fil=fopen(newName,"w+");//buat file baru
+            fclose(fil);
+            flag++;//flag +1
+        }
+    
+    * Mengambil informasi dari variabel nama
+    
+    * Mengecek terakhir kali dibuka
+    
+    * Menghitung perbedaan waktu sekarang dengan terakhir kali dibuka
+    
+    * Jika perbedaanya kurang dari sama dengan 30, maka deklarasikan nama baru
+    
+    * Mengubah flag yang berupa int ke string lalu disimpan ke temp
+    
+    * Menggabungkan nama baru dengan temp, lalu dengan txt
+    
+    * Lalu membuat file baru dengan namanya nama baru
+    
+    * Kemudian di close lalu flag ditambah satu
+    
 5. Kerjakan poin a dan b di bawah:
 
     a. Buatlah program c untuk mencatat log setiap menit dari file log pada syslog ke /home/[user]/log/[dd:MM:yyyy-hh:mm]/log#.log
