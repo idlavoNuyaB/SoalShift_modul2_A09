@@ -231,6 +231,9 @@
     
     * Kemudian di close lalu flag ditambah satu
     
+    [**Source Code**](https://github.com/idlavoNuyaB/SoalShift_modul2_A09/blob/master/soal4/soal4.c)
+
+    
 5. Kerjakan poin a dan b di bawah:
 
     a. Buatlah program c untuk mencatat log setiap menit dari file log pada syslog ke /home/[user]/log/[dd:MM:yyyy-hh:mm]/log#.log
